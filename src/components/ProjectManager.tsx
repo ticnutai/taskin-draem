@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Filter, Bell, Download, Upload, Calendar, Clock } from 'lucide-react';
+import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Plus, Filter, Bell } from 'lucide-react';
+import { ActionButtons } from './project/ActionButtons';
+import { Task, statusOptions } from '@/types/Task';
 import {
   Table,
   TableBody,
@@ -16,16 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
-export interface Task {
-  id: string;
-  clientName: string;
-  taskName: string;
-  dueDate: string;
-  status: 'completed' | 'in-progress' | 'pending';
-  assignee: string;
-  notes: string;
-}
 
 const ProjectManager = () => {
   const [tasks, setTasks] = useState<Task[]>([
@@ -72,12 +64,6 @@ const ProjectManager = () => {
   const [reminderDialogOpen, setReminderDialogOpen] = useState(false);
   const [reminderTask, setReminderTask] = useState<string>('');
   const [reminderTime, setReminderTime] = useState<string>('');
-
-  const statusOptions = [
-    { value: 'completed', label: 'הושלם', color: 'bg-green-50 text-green-700 border-green-200' },
-    { value: 'in-progress', label: 'בטיפול', color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-    { value: 'pending', label: 'ממתין', color: 'bg-red-50 text-red-700 border-red-200' }
-  ];
 
   const getStatusColor = (status: string) => {
     const option = statusOptions.find(opt => opt.value === status);
@@ -150,81 +136,17 @@ const ProjectManager = () => {
     ));
   };
 
-  const exportToCSV = () => {
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + "שם הלקוח,שם המשימה,תאריך יעד,סטטוס,אחראי,הערות\n"
-      + tasks.map(task => 
-          `"${task.clientName}","${task.taskName}","${task.dueDate}","${statusOptions.find(opt => opt.value === task.status)?.label}","${task.assignee}","${task.notes}"`
-        ).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "משימות_לקוחות.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleImport = (newTasks: Task[]) => {
+    setTasks([...tasks, ...newTasks]);
   };
 
-  const exportToExcel = () => {
-    const jsonData = tasks.map(task => ({
-      "שם הלקוח": task.clientName,
-      "שם המשימה": task.taskName,
-      "תאריך יעד": task.dueDate,
-      "סטטוס": statusOptions.find(opt => opt.value === task.status)?.label,
-      "אחראי": task.assignee,
-      "הערות": task.notes
-    }));
-    
-    const worksheet = JSON.stringify(jsonData);
-    const csvContent = "data:application/vnd.ms-excel," + encodeURIComponent(worksheet);
-    const link = document.createElement("a");
-    link.setAttribute("href", csvContent);
-    link.setAttribute("download", "משימות_לקוחות.xls");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const importFromFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      try {
-        // Simple CSV parsing for demo
-        const lines = text.split('\n');
-        const headers = lines[0].split(',');
-        const newTasks: Task[] = [];
-        
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',');
-          if (values.length >= 6) {
-            newTasks.push({
-              id: Date.now().toString() + i,
-              clientName: values[0]?.replace(/"/g, '') || '',
-              taskName: values[1]?.replace(/"/g, '') || '',
-              dueDate: values[2]?.replace(/"/g, '') || '',
-              status: 'pending' as Task['status'],
-              assignee: values[4]?.replace(/"/g, '') || '',
-              notes: values[5]?.replace(/"/g, '') || ''
-            });
-          }
-        }
-        
-        setTasks([...tasks, ...newTasks]);
-      } catch (error) {
-        console.error('Error parsing file:', error);
-      }
-    };
-    reader.readAsText(file);
+  const clearFilters = () => {
+    setFilterClient('all');
+    setFilterStatus('all');
   };
 
   const setReminder = () => {
     if (reminderTask && reminderTime) {
-      // In a real app, this would integrate with browser notifications or a backend service
       const reminderDate = new Date(reminderTime);
       const now = new Date();
       const timeDiff = reminderDate.getTime() - now.getTime();
@@ -248,99 +170,45 @@ const ProjectManager = () => {
           <CardTitle className="text-2xl font-bold text-primary">ניהול פרויקטים לפי לקוח</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Action Buttons - Gradient Style */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <Button
-              onClick={addTask}
-              className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-medium py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <Plus className="w-4 h-4 ml-2" />
-              הוסף משימה
-            </Button>
-            
-            <Dialog open={reminderDialogOpen} onOpenChange={setReminderDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500 hover:from-pink-600 hover:via-rose-600 hover:to-orange-600 text-white font-medium py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                  <Bell className="w-4 h-4 ml-2" />
+          <ActionButtons
+            onAddTask={addTask}
+            tasks={tasks}
+            onImport={handleImport}
+            onClearFilters={clearFilters}
+            reminderDialogOpen={reminderDialogOpen}
+            setReminderDialogOpen={setReminderDialogOpen}
+          >
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>הוספת תזכורת חדשה</DialogTitle>
+                <DialogDescription>
+                  הוסף תזכורת למשימה או פרויקט
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <Input
+                  placeholder="תיאור התזכורת"
+                  value={reminderTask}
+                  onChange={(e) => setReminderTask(e.target.value)}
+                />
+                <Input
+                  type="datetime-local"
+                  value={reminderTime}
+                  onChange={(e) => setReminderTime(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setReminderDialogOpen(false)}>
+                  ביטול
+                </Button>
+                <Button onClick={setReminder}>
                   הוסף תזכורת
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>הוספת תזכורת חדשה</DialogTitle>
-                  <DialogDescription>
-                    הוסף תזכורת למשימה או פרויקט
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Input
-                      placeholder="תיאור התזכורת"
-                      value={reminderTask}
-                      onChange={(e) => setReminderTask(e.target.value)}
-                      className="col-span-4"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Input
-                      type="datetime-local"
-                      value={reminderTime}
-                      onChange={(e) => setReminderTime(e.target.value)}
-                      className="col-span-4"
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setReminderDialogOpen(false)}>
-                    ביטול
-                  </Button>
-                  <Button onClick={setReminder}>
-                    הוסף תזכורת
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+              </div>
+            </DialogContent>
+          </ActionButtons>
 
-            <Button
-              onClick={exportToCSV}
-              className="bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 hover:from-cyan-600 hover:via-blue-600 hover:to-indigo-600 text-white font-medium py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <Download className="w-4 h-4 ml-2" />
-              יצוא CSV
-            </Button>
-
-            <Button
-              onClick={exportToExcel}
-              className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 text-white font-medium py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <Download className="w-4 h-4 ml-2" />
-              יצוא Excel
-            </Button>
-
-            <label className="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-medium py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer flex items-center justify-center">
-              <Upload className="w-4 h-4 ml-2" />
-              יבוא קובץ
-              <input
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                onChange={importFromFile}
-                className="hidden"
-              />
-            </label>
-
-            <Button
-              variant="outline"
-              onClick={() => {
-                setFilterClient('all');
-                setFilterStatus('all');
-              }}
-              className="bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 hover:from-green-600 hover:via-teal-600 hover:to-cyan-600 text-white font-medium py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl border-none"
-            >
-              <Filter className="w-4 h-4 ml-2" />
-              נקה סינון
-            </Button>
-          </div>
-          {/* Add New Task Form */}
+          {/* ... keep existing code (task form, filters, progress, table) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 p-4 border rounded-lg bg-muted/50">
             <Input
               placeholder="שם הלקוח"
@@ -382,7 +250,6 @@ const ProjectManager = () => {
             />
           </div>
 
-          {/* Filters */}
           <div className="flex flex-wrap gap-4 mb-6 p-4 border rounded-lg bg-muted/50">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4" />
@@ -415,18 +282,8 @@ const ProjectManager = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setFilterClient('all');
-                setFilterStatus('all');
-              }}
-            >
-              נקה סינון
-            </Button>
           </div>
 
-          {/* Progress Summary */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             {clients.map(client => {
               const stats = projectProgress[client];
@@ -451,7 +308,6 @@ const ProjectManager = () => {
             })}
           </div>
 
-          {/* Tasks Table */}
           <div className="rounded-md border">
             <Table>
               <TableHeader>
