@@ -1,37 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Task } from '@/types/Task';
 import { Column } from '@/types/Column';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export function useProjectData() {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      clientName: 'חברת טכנולוגיה א',
-      taskName: 'פיתוח אתר אינטרנט',
-      dueDate: '2024-12-25',
-      status: 'in-progress',
-      assignee: 'יונתן כהן',
-      notes: 'צריך לסיים את עמוד הבית'
-    },
-    {
-      id: '2',
-      clientName: 'חברת טכנולוגיה א',
-      taskName: 'בדיקות איכות',
-      dueDate: '2024-12-30',
-      status: 'pending',
-      assignee: 'שרה לוי',
-      notes: 'ממתין לסיום הפיתוח'
-    },
-    {
-      id: '3',
-      clientName: 'חברת שיווק ב',
-      taskName: 'עיצוב לוגו',
-      dueDate: '2024-12-20',
-      status: 'completed',
-      assignee: 'דן אברהם',
-      notes: 'הושלם בהצלחה'
-    }
-  ]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const [newTask, setNewTask] = useState<Omit<Task, 'id'>>({
     clientName: '',
@@ -42,15 +18,7 @@ export function useProjectData() {
     notes: ''
   });
 
-  const [columns, setColumns] = useState<Column[]>([
-    { id: 'clientName', label: 'שם הלקוח', visible: true, order: 0, required: true },
-    { id: 'taskName', label: 'שם המשימה', visible: true, order: 1, required: true },
-    { id: 'dueDate', label: 'תאריך יעד', visible: true, order: 2, required: false },
-    { id: 'status', label: 'סטטוס', visible: true, order: 3, required: false },
-    { id: 'assignee', label: 'אחראי', visible: true, order: 4, required: false },
-    { id: 'notes', label: 'הערות', visible: true, order: 5, required: false },
-    { id: 'actions', label: 'פעולות', visible: true, order: 6, required: true }
-  ]);
+  const [columns, setColumns] = useState<Column[]>([]);
 
   const clients = useMemo(() => {
     const uniqueClients = [...new Set(tasks.map(task => task.clientName).filter(name => name && name.trim() !== ''))];
@@ -73,56 +41,302 @@ export function useProjectData() {
     return clientStats;
   }, [tasks]);
 
-  const addTask = () => {
-    const task: Task = {
-      id: Date.now().toString(),
-      clientName: newTask.clientName || '',
-      taskName: newTask.taskName || '',
-      dueDate: newTask.dueDate || '',
-      status: 'pending',
-      assignee: newTask.assignee || '',
-      notes: newTask.notes || ''
-    };
-    setTasks([...tasks, task]);
-    setNewTask({
-      clientName: '',
-      taskName: '',
-      dueDate: '',
-      status: 'pending',
-      assignee: '',
-      notes: ''
-    });
+  // Load data from Supabase on mount
+  useEffect(() => {
+    loadTasks();
+    loadColumns();
+  }, []);
+
+  const loadTasks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const formattedTasks: Task[] = data.map(task => {
+        const baseTask: Task = {
+          id: task.id,
+          clientName: task.client_name,
+          taskName: task.task_name,
+          dueDate: task.due_date || '',
+          status: task.status as Task['status'],
+          assignee: task.assignee || '',
+          notes: task.notes || ''
+        };
+        
+        // Add custom data if it exists and is an object
+        if (task.custom_data && typeof task.custom_data === 'object') {
+          Object.assign(baseTask, task.custom_data);
+        }
+        
+        return baseTask;
+      });
+
+      setTasks(formattedTasks);
+    } catch (error: any) {
+      toast({
+        title: "שגיאה בטעינת משימות",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateTaskField = (taskId: string, field: keyof Task, value: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, [field]: value } : task
-    ));
+  const loadColumns = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('columns')
+        .select('*')
+        .order('column_order', { ascending: true });
+
+      if (error) throw error;
+
+      const formattedColumns: Column[] = data.map(col => ({
+        id: col.id,
+        label: col.label,
+        visible: col.visible,
+        order: col.column_order,
+        required: col.required
+      }));
+
+      // Add actions column if not exists
+      if (!formattedColumns.find(col => col.id === 'actions')) {
+        formattedColumns.push({
+          id: 'actions',
+          label: 'פעולות',
+          visible: true,
+          order: formattedColumns.length,
+          required: true
+        });
+      }
+
+      setColumns(formattedColumns);
+    } catch (error: any) {
+      toast({
+        title: "שגיאה בטעינת עמודות",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
-  const updateTaskStatus = (taskId: string, status: Task['status']) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, status } : task
-    ));
+  const addTask = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert({
+          client_name: newTask.clientName || '',
+          task_name: newTask.taskName || '',
+          due_date: newTask.dueDate || null,
+          status: 'pending',
+          assignee: newTask.assignee || '',
+          notes: newTask.notes || ''
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const formattedTask: Task = {
+        id: data.id,
+        clientName: data.client_name,
+        taskName: data.task_name,
+        dueDate: data.due_date || '',
+        status: data.status as Task['status'],
+        assignee: data.assignee || '',
+        notes: data.notes || ''
+      };
+
+      setTasks([formattedTask, ...tasks]);
+      setNewTask({
+        clientName: '',
+        taskName: '',
+        dueDate: '',
+        status: 'pending',
+        assignee: '',
+        notes: ''
+      });
+
+      toast({
+        title: "משימה נוספה",
+        description: "המשימה נשמרה בהצלחה"
+      });
+    } catch (error: any) {
+      toast({
+        title: "שגיאה בהוספת משימה",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleImport = (newTasks: Task[]) => {
-    setTasks([...tasks, ...newTasks]);
+  const updateTaskField = async (taskId: string, field: keyof Task, value: string) => {
+    try {
+      const updateData: any = {};
+      
+      // Map field names to database column names
+      switch (field) {
+        case 'clientName':
+          updateData.client_name = value;
+          break;
+        case 'taskName':
+          updateData.task_name = value;
+          break;
+        case 'dueDate':
+          updateData.due_date = value || null;
+          break;
+        default:
+          updateData[field] = value;
+      }
+
+      const { error } = await supabase
+        .from('tasks')
+        .update(updateData)
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      // Update local state
+      setTasks(tasks.map(task => 
+        task.id === taskId ? { ...task, [field]: value } : task
+      ));
+    } catch (error: any) {
+      toast({
+        title: "שגיאה בעדכון משימה",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
-  const addColumn = () => {
-    const newColumn: Column = {
-      id: `custom_${Date.now()}`,
-      label: `עמודה חדשה ${columns.length + 1}`,
-      visible: true,
-      order: columns.length,
-      required: false
-    };
-    setColumns([...columns, newColumn]);
+  const updateTaskStatus = async (taskId: string, status: Task['status']) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status })
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      setTasks(tasks.map(task => 
+        task.id === taskId ? { ...task, status } : task
+      ));
+    } catch (error: any) {
+      toast({
+        title: "שגיאה בעדכון סטטוס",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
-  const deleteTask = (taskId: string) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
+  const handleImport = async (newTasks: Task[]) => {
+    try {
+      const tasksToInsert = newTasks.map(task => ({
+        client_name: task.clientName,
+        task_name: task.taskName,
+        due_date: task.dueDate || null,
+        status: task.status,
+        assignee: task.assignee || '',
+        notes: task.notes || ''
+      }));
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert(tasksToInsert)
+        .select();
+
+      if (error) throw error;
+
+      const formattedTasks: Task[] = data.map(task => ({
+        id: task.id,
+        clientName: task.client_name,
+        taskName: task.task_name,
+        dueDate: task.due_date || '',
+        status: task.status as Task['status'],
+        assignee: task.assignee || '',
+        notes: task.notes || ''
+      }));
+
+      setTasks([...formattedTasks, ...tasks]);
+
+      toast({
+        title: "ייבוא הושלם",
+        description: `${newTasks.length} משימות יובאו בהצלחה`
+      });
+    } catch (error: any) {
+      toast({
+        title: "שגיאה בייבוא",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const addColumn = async () => {
+    try {
+      const newColumn: Column = {
+        id: `custom_${Date.now()}`,
+        label: `עמודה חדשה ${columns.length}`,
+        visible: true,
+        order: columns.length,
+        required: false
+      };
+
+      const { error } = await supabase
+        .from('columns')
+        .insert({
+          id: newColumn.id,
+          label: newColumn.label,
+          visible: newColumn.visible,
+          column_order: newColumn.order,
+          required: newColumn.required
+        });
+
+      if (error) throw error;
+
+      setColumns([...columns, newColumn]);
+
+      toast({
+        title: "עמודה נוספה",
+        description: "העמודה נשמרה בהצלחה"
+      });
+    } catch (error: any) {
+      toast({
+        title: "שגיאה בהוספת עמודה",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteTask = async (taskId: string) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId);
+
+      if (error) throw error;
+
+      setTasks(tasks.filter(task => task.id !== taskId));
+
+      toast({
+        title: "משימה נמחקה",
+        description: "המשימה נמחקה בהצלחה"
+      });
+    } catch (error: any) {
+      toast({
+        title: "שגיאה במחיקת משימה",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
   };
 
   return {
@@ -139,6 +353,7 @@ export function useProjectData() {
     updateTaskStatus,
     handleImport,
     addColumn,
-    deleteTask
+    deleteTask,
+    loading
   };
 }

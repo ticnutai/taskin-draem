@@ -26,7 +26,8 @@ const ProjectManager = () => {
     updateTaskStatus,
     handleImport,
     addColumn,
-    deleteTask
+    deleteTask,
+    loading
   } = useProjectData();
 
   const {
@@ -74,6 +75,23 @@ const ProjectManager = () => {
         return '';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto space-y-6 direction-rtl" dir="rtl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-primary">ניהול פרויקטים לפי לקוח</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-center py-8">
+              <div className="text-lg">טוען נתונים...</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6 direction-rtl" dir="rtl">
