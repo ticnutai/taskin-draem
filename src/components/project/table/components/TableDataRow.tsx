@@ -84,6 +84,17 @@ export function TableDataRow({
           }}
         >
           <div className="flex items-center justify-between gap-2">
+            {/* Row Color Picker - only in first column and on the left */}
+            {colIndex === 0 && (
+              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                <RowColorPicker
+                  taskId={task.id}
+                  currentColor={rowColor}
+                  onColorChange={onRowColorChange}
+                />
+              </div>
+            )}
+            
             <TableCell
               task={task}
               column={column}
@@ -98,32 +109,14 @@ export function TableDataRow({
               setReminderTask={setReminderTask}
               setReminderDialogOpen={setReminderDialogOpen}
             />
-            
-            {/* Row Color Picker - only in first column */}
-            {colIndex === 0 && (
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <RowColorPicker
-                  taskId={task.id}
-                  currentColor={rowColor}
-                  onColorChange={onRowColorChange}
-                />
-              </div>
-            )}
           </div>
         </td>
       ))}
       
       {/* Row Resizer */}
       <div
-        className="absolute bottom-0 left-0 w-full h-1 cursor-row-resize opacity-0 group-hover:opacity-100 transition-opacity z-50"
-        onMouseDown={(e) => {
-          e.stopPropagation();
-          onRowResize(e);
-        }}
-        style={{
-          background: 'linear-gradient(to right, #3b82f6, #1d4ed8)',
-          borderRadius: '0 0 4px 4px'
-        }}
+        className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-300 to-blue-500 hover:from-blue-400 hover:to-blue-600 cursor-row-resize opacity-0 group-hover:opacity-70 hover:opacity-100 transition-all duration-200"
+        onMouseDown={onRowResize}
       />
     </tr>
   );
