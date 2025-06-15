@@ -2,8 +2,8 @@ import { useState, useMemo } from 'react';
 import { Task } from '@/types/Task';
 
 export function useFilters(tasks: Task[]) {
-  const [filterClient, setFilterClient] = useState<string>('');
-  const [filterStatus, setFilterStatus] = useState<string>('');
+  const [filterClient, setFilterClient] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
