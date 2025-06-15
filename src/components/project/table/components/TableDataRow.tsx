@@ -74,12 +74,12 @@ export function TableDataRow({
       {visibleColumns.map((column, colIndex) => (
         <td
           key={`${task.id}-${column.id}`}
-          className={`relative py-4 px-8 text-right transition-all duration-300 hover:bg-white/50 ${
+          className={`relative py-4 px-8 text-right transition-colors duration-200 group-hover:bg-muted/50 ${
             column.id === 'clientName' 
-              ? 'sticky left-0 z-50 bg-white/95 shadow-lg border-r border-slate-200 font-semibold text-slate-800 backdrop-blur-sm' 
+              ? 'sticky left-0 z-40 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
               : highlightedColumns.has(column.id)
-                ? 'bg-gradient-to-br from-amber-50/80 to-yellow-50/80 text-amber-900 shadow-md'
-                : `${themeColors.body} backdrop-blur-sm`
+                ? 'bg-amber-50'
+                : ''
           } ${taskIndex === totalTasks - 1 && colIndex === 0 ? 'rounded-br-2xl' : ''} ${taskIndex === totalTasks - 1 && colIndex === visibleColumns.length - 1 ? 'rounded-bl-2xl' : ''}`}
           style={{ 
             width: columnWidths[column.id] || 200,

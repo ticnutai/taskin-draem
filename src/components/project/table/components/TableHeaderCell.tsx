@@ -55,17 +55,17 @@ export function TableHeaderCell({
   return (
     <th 
       key={column.id}
-      className={`group relative sticky top-0 text-right font-bold py-5 px-8 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
+      className={`group relative text-right font-bold py-5 px-8 transition-colors duration-200 sticky top-0 ${
         column.id === 'clientName' 
-          ? 'sticky left-0 z-50 bg-white/95 shadow-lg border-r border-slate-200 font-semibold text-slate-800 backdrop-blur-sm' 
+          ? 'sticky left-0 z-50 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
           : isHighlighted
-            ? 'bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 text-amber-900 shadow-lg border-amber-200 z-20'
-            : `${themeColors.header} ${themeColors.headerText} hover:shadow-md z-20`
+            ? 'bg-amber-100 text-amber-900 border-amber-200 z-30'
+            : `${themeColors.header} ${themeColors.headerText} z-30 bg-white dark:bg-slate-900`
       } ${index === 0 ? 'rounded-tr-2xl' : ''} ${index === totalColumns - 1 ? 'rounded-tl-2xl' : ''}`}
       style={{ 
         width: columnWidth,
         minWidth: columnWidth,
-        borderBottom: `3px solid rgba(148, 163, 184, 0.3)`
+        borderBottom: '2px solid hsl(var(--border))'
       }}
       onDoubleClick={() => onCopy(headerValue)}
       onContextMenu={(e) => {
