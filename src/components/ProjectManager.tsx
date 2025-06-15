@@ -338,6 +338,18 @@ const ProjectManager = () => {
             setReminderTask={setReminderTask}
             setReminderDialogOpen={setReminderDialogOpen}
             onColumnToggle={() => setColumnManagerOpen(true)}
+            columns={columns}
+            onAddRow={addTask}
+            onAddColumn={() => {
+              const newColumn: Column = {
+                id: `custom_${Date.now()}`,
+                label: `עמודה חדשה ${columns.length + 1}`,
+                visible: true,
+                order: columns.length,
+                required: false
+              };
+              setColumns([...columns, newColumn]);
+            }}
           />
 
           <ColumnManager
