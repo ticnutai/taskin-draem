@@ -158,10 +158,10 @@ export function RefactoredEditableTable({
 
       <div 
         ref={tableRef}
-        className="relative overflow-auto max-h-[600px] max-w-full rounded-2xl border border-slate-200 shadow-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 backdrop-blur-sm"
+        className="relative overflow-auto max-h-[600px] max-w-full rounded-2xl border border-slate-200 shadow-2xl"
         style={{ cursor: isResizing ? 'col-resize' : 'default' }}
       >
-        <table className="w-max min-w-full border-separate border-spacing-0 bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-inner">
+        <table className="w-max min-w-full border-separate border-spacing-0 rounded-2xl overflow-hidden shadow-inner">
           <thead>
             <tr>
               {visibleColumns.map((column, index) => (
