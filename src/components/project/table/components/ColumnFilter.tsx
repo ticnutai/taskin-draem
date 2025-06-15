@@ -72,12 +72,12 @@ export function ColumnFilter({
 
       case 'status':
         return (
-          <Select value={filterValue} onValueChange={(value) => onFilterChange(columnId, value)}>
+          <Select value={filterValue || 'all'} onValueChange={(value) => onFilterChange(columnId, value === 'all' ? '' : value)}>
             <SelectTrigger className="h-6 text-xs w-24">
               <SelectValue placeholder="סנן" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">הכל</SelectItem>
+              <SelectItem value="all">הכל</SelectItem>
               {options?.map(option => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
