@@ -68,7 +68,6 @@ export function TableHeaderCell({
         borderBottom: `3px solid rgba(148, 163, 184, 0.3)`
       }}
       onDoubleClick={() => onCopy(headerValue)}
-      onClick={onEdit}
       onContextMenu={(e) => {
         e.preventDefault();
         onHighlightToggle();
@@ -102,7 +101,13 @@ export function TableHeaderCell({
                 </Button>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div 
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+            >
               <span className="animate-fade-in">{headerValue}</span>
               {isHighlighted && (
                 <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>

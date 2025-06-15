@@ -120,7 +120,14 @@ export function TableCell({
   };
 
   return (
-    <div className="w-full">
+    <div 
+      className="w-full cursor-pointer" 
+      onClick={() => {
+        if (column.id !== 'status' && column.id !== 'actions') {
+          setEditingCell({taskId: task.id, field: column.id});
+        }
+      }}
+    >
       {renderCellContent()}
     </div>
   );
