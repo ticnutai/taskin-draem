@@ -14,7 +14,7 @@ interface ColumnFilterProps {
   filterValue: string;
   onFilterChange: (columnId: string, value: string) => void;
   onClearFilter: (columnId: string) => void;
-  options?: ReadonlyArray<{ readonly value: string; readonly label: string; readonly color?: string }>;
+  options?: Array<{ value: string; label: string }>;
 }
 
 export function ColumnFilter({

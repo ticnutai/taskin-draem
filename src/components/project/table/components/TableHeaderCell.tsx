@@ -119,7 +119,10 @@ export function TableHeaderCell({
                 filterValue={columnFilters[column.id] || ''}
                 onFilterChange={onFilterChange}
                 onClearFilter={onClearFilter}
-                options={column.id === 'status' ? statusOptions : undefined}
+                options={column.id === 'status' ? statusOptions.map(option => ({
+                  value: option.value,
+                  label: option.label
+                })) : undefined}
               />
             </div>
           )}
