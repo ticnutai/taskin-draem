@@ -24,7 +24,7 @@ interface TableDataRowProps {
   rowHeight: number;
   rowColor: string;
   onRowColorChange: (taskId: string, color: string) => void;
-  onRowResize: (e: React.MouseEvent) => void;
+  
   onDeleteRow?: () => void;
   themeColors: any;
 }
@@ -47,7 +47,6 @@ export function TableDataRow({
   rowHeight,
   rowColor,
   onRowColorChange,
-  onRowResize,
   onDeleteRow,
   themeColors
 }: TableDataRowProps) {
@@ -127,12 +126,6 @@ export function TableDataRow({
           />
         </td>
       ))}
-      
-      {/* Row Resizer */}
-      <div
-        className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-300 to-blue-500 hover:from-blue-400 hover:to-blue-600 cursor-row-resize opacity-0 group-hover:opacity-70 hover:opacity-100 transition-all duration-200"
-        onMouseDown={onRowResize}
-      />
     </tr>
   );
 }

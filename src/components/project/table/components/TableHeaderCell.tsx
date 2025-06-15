@@ -18,7 +18,7 @@ interface TableHeaderCellProps {
   onEditEnd: () => void;
   onHighlightToggle: () => void;
   onCopy: (text: string) => void;
-  onResize: (e: React.MouseEvent) => void;
+  
   onDelete?: () => void;
   themeColors: any;
   columnFilters: Record<string, string>;
@@ -39,7 +39,6 @@ export function TableHeaderCell({
   onEditEnd,
   onHighlightToggle,
   onCopy,
-  onResize,
   onDelete,
   themeColors,
   columnFilters,
@@ -55,12 +54,12 @@ export function TableHeaderCell({
   return (
     <th 
       key={column.id}
-      className={`group relative text-right font-bold py-5 px-8 transition-colors duration-200 sticky top-0 ${
+      className={`group relative text-right font-bold py-5 px-8 transition-colors duration-200 ${
         column.id === 'clientName' 
-          ? 'sticky left-0 z-50 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
+          ? 'sticky top-0 left-0 z-50 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
           : isHighlighted
-            ? 'bg-amber-100 text-amber-900 border-amber-200 z-30'
-            : `${themeColors.header} ${themeColors.headerText} z-30 bg-white dark:bg-slate-900`
+            ? 'sticky top-0 bg-amber-100 text-amber-900 border-amber-200 z-30'
+            : `sticky top-0 ${themeColors.header} ${themeColors.headerText} z-30 bg-white dark:bg-slate-900`
       } ${index === 0 ? 'rounded-tr-2xl' : ''} ${index === totalColumns - 1 ? 'rounded-tl-2xl' : ''}`}
       style={{ 
         width: columnWidth,
@@ -133,12 +132,6 @@ export function TableHeaderCell({
           )}
         </div>
       )}
-      
-      {/* Column Resizer */}
-      <div
-        className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-blue-300 to-blue-500 hover:from-blue-400 hover:to-blue-600 cursor-col-resize opacity-0 group-hover:opacity-70 hover:opacity-100 transition-all duration-200"
-        onMouseDown={onResize}
-      />
     </th>
   );
 }

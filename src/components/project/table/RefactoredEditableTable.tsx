@@ -179,7 +179,7 @@ export function RefactoredEditableTable({
                   onEditEnd={() => setEditingHeader(null)}
                   onHighlightToggle={() => toggleColumnHighlight(column.id)}
                   onCopy={copyToClipboard}
-                  onResize={(e) => handleMouseDown(e, 'column', column.id)}
+                  
                   onDelete={!column.required ? () => handleDeleteColumn(column.id) : undefined}
                   themeColors={currentThemeColors}
                   columnFilters={columnFilters}
@@ -210,7 +210,7 @@ export function RefactoredEditableTable({
                 rowHeight={rowHeights[task.id]}
                 rowColor={rowColors[task.id] || ''}
                 onRowColorChange={handleRowColorChange}
-                onRowResize={(e) => handleMouseDown(e, 'row', task.id)}
+                
                 onDeleteRow={() => handleDeleteRow(task.id)}
                 themeColors={currentThemeColors}
               />
