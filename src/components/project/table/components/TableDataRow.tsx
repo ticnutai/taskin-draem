@@ -3,6 +3,8 @@ import { Task } from '@/types/Task';
 import { Column } from '@/types/Column';
 import { TableCell } from '../TableCell';
 import { RowColorPicker, colorOptions } from './RowColorPicker';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface TableDataRowProps {
   task: Task;
@@ -23,6 +25,7 @@ interface TableDataRowProps {
   rowColor: string;
   onRowColorChange: (taskId: string, color: string) => void;
   onRowResize: (e: React.MouseEvent) => void;
+  onDeleteRow?: () => void;
   themeColors: any;
 }
 
@@ -45,6 +48,7 @@ export function TableDataRow({
   rowColor,
   onRowColorChange,
   onRowResize,
+  onDeleteRow,
   themeColors
 }: TableDataRowProps) {
   const getRowColorClasses = () => {
@@ -83,32 +87,47 @@ export function TableDataRow({
             borderBottom: taskIndex === totalTasks - 1 ? 'none' : '1px solid rgba(148, 163, 184, 0.2)'
           }}
         >
-          <div className="flex items-center justify-between gap-2">
-            {/* Row Color Picker - only in first column and on the left */}
+          <div className="flex items-center justify-between gap-2 w-full">
+            {/* Row Controls - only in first column and on the left */}
             {colIndex === 0 && (
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <RowColorPicker
                   taskId={task.id}
                   currentColor={rowColor}
                   onColorChange={onRowColorChange}
                 />
+                {onDeleteRow && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="p-1 h-6 w-6 hover:bg-red-100 hover:text-red-600"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteRow();
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                )}
               </div>
             )}
             
-            <TableCell
-              task={task}
-              column={column}
-              colIndex={colIndex}
-              totalColumns={visibleColumns.length}
-              editingCell={editingCell}
-              setEditingCell={setEditingCell}
-              updateTaskField={updateTaskField}
-              updateTaskStatus={updateTaskStatus}
-              copyToClipboard={copyToClipboard}
-              getStatusColor={getStatusColor}
-              setReminderTask={setReminderTask}
-              setReminderDialogOpen={setReminderDialogOpen}
-            />
+            <div className="flex-1">
+              <TableCell
+                task={task}
+                column={column}
+                colIndex={colIndex}
+                totalColumns={visibleColumns.length}
+                editingCell={editingCell}
+                setEditingCell={setEditingCell}
+                updateTaskField={updateTaskField}
+                updateTaskStatus={updateTaskStatus}
+                copyToClipboard={copyToClipboard}
+                getStatusColor={getStatusColor}
+                setReminderTask={setReminderTask}
+                setReminderDialogOpen={setReminderDialogOpen}
+              />
+            </div>
           </div>
         </td>
       ))}

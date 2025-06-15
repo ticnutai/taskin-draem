@@ -1,5 +1,7 @@
 import React from 'react';
 import { Column } from '@/types/Column';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface TableHeaderCellProps {
   column: Column;
@@ -15,6 +17,7 @@ interface TableHeaderCellProps {
   onHighlightToggle: () => void;
   onCopy: (text: string) => void;
   onResize: (e: React.MouseEvent) => void;
+  onDelete?: () => void;
   themeColors: any;
 }
 
@@ -32,6 +35,7 @@ export function TableHeaderCell({
   onHighlightToggle,
   onCopy,
   onResize,
+  onDelete,
   themeColors
 }: TableHeaderCellProps) {
   return (
@@ -67,11 +71,28 @@ export function TableHeaderCell({
           style={{ direction: 'rtl' }}
         />
       ) : (
-        <div className="flex items-center justify-end gap-2">
-          <span className="animate-fade-in">{headerValue}</span>
-          {isHighlighted && (
-            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-          )}
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            {onDelete && !column.required && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6 hover:bg-red-100 hover:text-red-600"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="animate-fade-in">{headerValue}</span>
+            {isHighlighted && (
+              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+            )}
+          </div>
         </div>
       )}
       

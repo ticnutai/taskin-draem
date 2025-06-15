@@ -121,6 +121,10 @@ export function useProjectData() {
     setColumns([...columns, newColumn]);
   };
 
+  const deleteTask = (taskId: string) => {
+    setTasks(tasks.filter(task => task.id !== taskId));
+  };
+
   return {
     tasks,
     setTasks,
@@ -134,6 +138,7 @@ export function useProjectData() {
     updateTaskField,
     updateTaskStatus,
     handleImport,
-    addColumn
+    addColumn,
+    deleteTask
   };
 }

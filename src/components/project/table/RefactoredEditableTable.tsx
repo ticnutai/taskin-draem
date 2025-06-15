@@ -7,6 +7,7 @@ import { TableDataRow } from './components/TableDataRow';
 import { TableThemeSelector, themeOptions } from './components/TableThemeSelector';
 import { useTableState } from './hooks/useTableState';
 import { useTableResize } from './hooks/useTableResize';
+import { DeleteConfirmDialog } from '../DeleteConfirmDialog';
 
 interface RefactoredEditableTableProps {
   tasks: Task[];
@@ -21,8 +22,10 @@ interface RefactoredEditableTableProps {
   setReminderDialogOpen: (open: boolean) => void;
   onColumnToggle: () => void;
   columns: Column[];
+  setColumns: (columns: Column[]) => void;
   onAddRow: () => void;
   onAddColumn: () => void;
+  onDeleteTask: (taskId: string) => void;
 }
 
 export function RefactoredEditableTable({
@@ -38,11 +41,26 @@ export function RefactoredEditableTable({
   setReminderDialogOpen,
   onColumnToggle,
   columns,
+  setColumns,
   onAddRow,
-  onAddColumn
+  onAddColumn,
+  onDeleteTask
 }: RefactoredEditableTableProps) {
   const tableRef = useRef<HTMLDivElement>(null);
   const [currentTheme, setCurrentTheme] = useState('default');
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    type: 'row' | 'column';
+    id: string;
+    title: string;
+    description: string;
+  }>({
+    open: false,
+    type: 'row',
+    id: '',
+    title: '',
+    description: ''
+  });
 
   const {
     editingHeader,
@@ -71,6 +89,49 @@ export function RefactoredEditableTable({
 
   const handleRowColorChange = (taskId: string, color: string) => {
     setRowColors(prev => ({ ...prev, [taskId]: color }));
+  };
+
+  const handleDeleteColumn = (columnId: string) => {
+    const column = columns.find(col => col.id === columnId);
+    if (!column) return;
+    
+    setDeleteDialog({
+      open: true,
+      type: 'column',
+      id: columnId,
+      title: 'מחיקת עמודה',
+      description: `האם אתה בטוח שברצונך למחוק את העמודה "${column.label}"? פעולה זו לא ניתנת לביטול.`
+    });
+  };
+
+  const handleDeleteRow = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    setDeleteDialog({
+      open: true,
+      type: 'row',
+      id: taskId,
+      title: 'מחיקת משימה',
+      description: `האם אתה בטוח שברצונך למחוק את המשימה "${task.taskName}" עבור "${task.clientName}"? פעולה זו לא ניתנת לביטול.`
+    });
+  };
+
+  const confirmDelete = () => {
+    if (deleteDialog.type === 'column') {
+      const newColumns = columns.filter(col => col.id !== deleteDialog.id);
+      setColumns(newColumns);
+    } else if (deleteDialog.type === 'row') {
+      onDeleteTask(deleteDialog.id);
+    }
+    
+    setDeleteDialog({
+      open: false,
+      type: 'row',
+      id: '',
+      title: '',
+      description: ''
+    });
   };
 
   const currentThemeColors = themeOptions.find(theme => theme.value === currentTheme)?.colors || themeOptions[0].colors;
@@ -118,6 +179,7 @@ export function RefactoredEditableTable({
                   onHighlightToggle={() => toggleColumnHighlight(column.id)}
                   onCopy={copyToClipboard}
                   onResize={(e) => handleMouseDown(e, 'column', column.id)}
+                  onDelete={!column.required ? () => handleDeleteColumn(column.id) : undefined}
                   themeColors={currentThemeColors}
                 />
               ))}
@@ -145,12 +207,21 @@ export function RefactoredEditableTable({
                 rowColor={rowColors[task.id] || ''}
                 onRowColorChange={handleRowColorChange}
                 onRowResize={(e) => handleMouseDown(e, 'row', task.id)}
+                onDeleteRow={() => handleDeleteRow(task.id)}
                 themeColors={currentThemeColors}
               />
             ))}
           </tbody>
         </table>
       </div>
+
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        onOpenChange={(open) => setDeleteDialog(prev => ({ ...prev, open }))}
+        title={deleteDialog.title}
+        description={deleteDialog.description}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

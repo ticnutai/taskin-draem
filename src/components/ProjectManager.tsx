@@ -25,7 +25,8 @@ const ProjectManager = () => {
     updateTaskField,
     updateTaskStatus,
     handleImport,
-    addColumn
+    addColumn,
+    deleteTask
   } = useProjectData();
 
   const {
@@ -124,8 +125,10 @@ const ProjectManager = () => {
             setReminderDialogOpen={setReminderDialogOpen}
             onColumnToggle={() => setColumnManagerOpen(true)}
             columns={columns}
+            setColumns={setColumns}
             onAddRow={addTask}
             onAddColumn={addColumn}
+            onDeleteTask={deleteTask}
           />
 
           <ColumnManager
