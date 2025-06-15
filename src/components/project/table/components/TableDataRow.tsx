@@ -115,8 +115,15 @@ export function TableDataRow({
       
       {/* Row Resizer */}
       <div
-        className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-300 to-blue-500 hover:from-blue-400 hover:to-blue-600 cursor-row-resize opacity-0 group-hover:opacity-70 hover:opacity-100 transition-all duration-200"
-        onMouseDown={onRowResize}
+        className="absolute bottom-0 left-0 w-full h-1 cursor-row-resize opacity-0 group-hover:opacity-100 transition-opacity z-50"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          onRowResize(e);
+        }}
+        style={{
+          background: 'linear-gradient(to right, #3b82f6, #1d4ed8)',
+          borderRadius: '0 0 4px 4px'
+        }}
       />
     </tr>
   );

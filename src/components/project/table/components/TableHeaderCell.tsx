@@ -77,8 +77,15 @@ export function TableHeaderCell({
       
       {/* Column Resizer */}
       <div
-        className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-blue-300 to-blue-500 hover:from-blue-400 hover:to-blue-600 cursor-col-resize opacity-0 group-hover:opacity-70 hover:opacity-100 transition-all duration-200"
-        onMouseDown={onResize}
+        className="absolute top-0 right-0 w-1 h-full cursor-col-resize opacity-0 group-hover:opacity-100 transition-opacity z-50"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          onResize(e);
+        }}
+        style={{
+          background: 'linear-gradient(to bottom, #3b82f6, #1d4ed8)',
+          borderRadius: '0 4px 4px 0'
+        }}
       />
     </th>
   );

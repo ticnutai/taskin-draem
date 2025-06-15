@@ -17,6 +17,7 @@ export const useTableResize = ({
 }: UseTableResizeProps) => {
   const handleMouseDown = useCallback((e: React.MouseEvent, type: 'column' | 'row', id: string) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsResizing(true);
     
     const startPos = type === 'column' ? e.clientX : e.clientY;
@@ -25,23 +26,31 @@ export const useTableResize = ({
       : rowHeights[id] || 50;
 
     const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
       const currentPos = type === 'column' ? e.clientX : e.clientY;
       const diff = currentPos - startPos;
-      const newSize = Math.max(50, startSize + diff);
+      const newSize = Math.max(type === 'column' ? 100 : 40, startSize + diff);
       
-      if (type === 'column') {
-        setColumnWidths(prev => ({ ...prev, [id]: newSize }));
-      } else {
-        setRowHeights(prev => ({ ...prev, [id]: newSize }));
-      }
+      requestAnimationFrame(() => {
+        if (type === 'column') {
+          setColumnWidths(prev => ({ ...prev, [id]: newSize }));
+        } else {
+          setRowHeights(prev => ({ ...prev, [id]: newSize }));
+        }
+      });
     };
 
     const handleMouseUp = () => {
       setIsResizing(false);
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
     };
 
+    document.body.style.cursor = type === 'column' ? 'col-resize' : 'row-resize';
+    document.body.style.userSelect = 'none';
+    
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   }, [columnWidths, rowHeights, setColumnWidths, setRowHeights, setIsResizing]);
