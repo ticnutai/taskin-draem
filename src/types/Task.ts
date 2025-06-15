@@ -6,6 +6,7 @@ export interface Task {
   status: 'completed' | 'in-progress' | 'pending';
   assignee: string;
   notes: string;
+  [key: string]: any; // Allow dynamic columns
 }
 
 export const statusOptions = [
