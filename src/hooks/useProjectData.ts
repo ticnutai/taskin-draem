@@ -53,7 +53,7 @@ export function useProjectData() {
   ]);
 
   const clients = useMemo(() => {
-    const uniqueClients = [...new Set(tasks.map(task => task.clientName))];
+    const uniqueClients = [...new Set(tasks.map(task => task.clientName).filter(name => name && name.trim() !== ''))];
     return uniqueClients;
   }, [tasks]);
 

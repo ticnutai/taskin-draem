@@ -30,11 +30,11 @@ export function FilterControls({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">כל הלקוחות</SelectItem>
-          {clients.map(client => (
-            <SelectItem key={client} value={client}>
-              {client}
-            </SelectItem>
-          ))}
+           {clients.filter(client => client && client.trim() !== '').map(client => (
+             <SelectItem key={client} value={client}>
+               {client}
+             </SelectItem>
+           ))}
         </SelectContent>
       </Select>
       <Select value={filterStatus} onValueChange={setFilterStatus}>
