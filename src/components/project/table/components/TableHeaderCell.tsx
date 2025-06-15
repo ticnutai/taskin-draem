@@ -57,11 +57,11 @@ export function TableHeaderCell({
       key={column.id}
       className={`group relative sticky top-0 z-20 text-right font-bold py-5 px-8 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
         column.id === 'clientName' 
-          ? 'sticky right-0 z-40 bg-gradient-to-l from-blue-100 via-white to-blue-100 shadow-2xl border-r-2 border-blue-300 text-blue-900' 
+          ? 'sticky left-0 z-40 bg-gradient-to-r from-blue-100 via-white to-blue-100 shadow-2xl border-l-2 border-blue-300 text-blue-900' 
           : isHighlighted
             ? 'bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 text-amber-900 shadow-lg border-amber-200'
             : `${themeColors.header} ${themeColors.headerText} hover:shadow-md`
-      } ${index === 0 ? 'rounded-tl-2xl' : ''} ${index === totalColumns - 1 ? 'rounded-tr-2xl' : ''}`}
+      } ${index === 0 ? 'rounded-tr-2xl' : ''} ${index === totalColumns - 1 ? 'rounded-tl-2xl' : ''}`}
       style={{ 
         width: columnWidth,
         minWidth: columnWidth,
