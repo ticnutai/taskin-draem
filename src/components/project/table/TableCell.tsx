@@ -79,7 +79,7 @@ export function TableCell({
         return isEditing ? (
           <Input
             type="date"
-            value={task[column.id as keyof Task] as string}
+            value={task[column.id as keyof Task] as string || ''}
             onChange={(e) => updateTaskField(task.id, column.id as keyof Task, e.target.value)}
             onBlur={() => setEditingCell(null)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
@@ -87,20 +87,22 @@ export function TableCell({
             className="h-8 text-right"
           />
         ) : (
-          new Date(task.dueDate).toLocaleDateString('he-IL')
+          <div className="cursor-text min-h-[20px]">
+            {task.dueDate ? new Date(task.dueDate).toLocaleDateString('he-IL') : 'לחץ להוספת תאריך'}
+          </div>
         );
       case 'notes':
         return isEditing ? (
           <Textarea
-            value={task[column.id as keyof Task] as string}
+            value={task[column.id as keyof Task] as string || ''}
             onChange={(e) => updateTaskField(task.id, column.id as keyof Task, e.target.value)}
             onBlur={() => setEditingCell(null)}
             autoFocus
             className="h-16 text-right resize-none"
           />
         ) : (
-          <div className="truncate" title={task[column.id as keyof Task] as string}>
-            {task[column.id as keyof Task] as string}
+          <div className="cursor-text min-h-[20px] truncate" title={task[column.id as keyof Task] as string}>
+            {(task[column.id as keyof Task] as string) || 'לחץ להוספת הערות'}
           </div>
         );
       default:
@@ -114,7 +116,9 @@ export function TableCell({
             className="h-8 text-right"
           />
         ) : (
-          task[column.id as keyof Task] as string || ''
+          <div className="cursor-text min-h-[20px]">
+            {(task[column.id as keyof Task] as string) || 'לחץ להוספת טקסט'}
+          </div>
         );
     }
   };
