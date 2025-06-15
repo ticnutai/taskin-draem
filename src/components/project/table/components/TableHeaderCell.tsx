@@ -54,10 +54,10 @@ export function TableHeaderCell({
   return (
     <th 
       key={column.id}
-      className={`group relative text-right font-bold py-5 px-8 transition-colors duration-200 ${
+      className={`group relative text-right font-bold py-5 px-8 transition-colors duration-200 sticky top-0 ${
         column.id === 'clientName' 
-          ? 'sticky left-0 top-0 z-[100] bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
-          : 'sticky top-0 z-[90] bg-white dark:bg-slate-900'
+          ? 'left-0 z-[100] bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
+          : 'z-[90] bg-white dark:bg-slate-900'
       } ${isHighlighted ? 'bg-amber-100 text-amber-900 border-amber-200' : `${themeColors.header} ${themeColors.headerText}`} ${index === 0 ? 'rounded-tr-2xl' : ''} ${index === totalColumns - 1 ? 'rounded-tl-2xl' : ''}`}
       style={{ 
         width: columnWidth,

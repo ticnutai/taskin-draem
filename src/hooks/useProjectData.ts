@@ -179,19 +179,42 @@ export function useProjectData() {
     try {
       const updateData: any = {};
       
-      // Map field names to database column names
-      switch (field) {
-        case 'clientName':
-          updateData.client_name = value;
-          break;
-        case 'taskName':
-          updateData.task_name = value;
-          break;
-        case 'dueDate':
-          updateData.due_date = value || null;
-          break;
-        default:
-          updateData[field] = value;
+      // Handle built-in fields
+      const builtInFields = ['clientName', 'taskName', 'dueDate', 'status', 'assignee', 'notes'];
+      
+      if (builtInFields.includes(field as string)) {
+        // Map field names to database column names
+        switch (field) {
+          case 'clientName':
+            updateData.client_name = value;
+            break;
+          case 'taskName':
+            updateData.task_name = value;
+            break;
+          case 'dueDate':
+            updateData.due_date = value || null;
+            break;
+          case 'assignee':
+            updateData.assignee = value;
+            break;
+          case 'notes':
+            updateData.notes = value;
+            break;
+          case 'status':
+            updateData.status = value;
+            break;
+        }
+      } else {
+        // Handle custom fields - update them in custom_data jsonb column
+        const task = tasks.find(t => t.id === taskId);
+        const currentCustomData = task ? Object.keys(task)
+          .filter(key => !builtInFields.includes(key) && key !== 'id')
+          .reduce((acc, key) => ({ ...acc, [key]: task[key as keyof Task] }), {}) : {};
+        
+        updateData.custom_data = {
+          ...currentCustomData,
+          [field]: value
+        };
       }
 
       const { error } = await supabase
