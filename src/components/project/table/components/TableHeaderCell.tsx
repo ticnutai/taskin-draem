@@ -55,12 +55,12 @@ export function TableHeaderCell({
   return (
     <th 
       key={column.id}
-      className={`group relative sticky top-0 z-20 text-right font-bold py-5 px-8 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
+      className={`group relative sticky top-0 text-right font-bold py-5 px-8 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
         column.id === 'clientName' 
-          ? 'sticky left-0 z-40 bg-gradient-to-r from-blue-100 via-white to-blue-100 shadow-2xl border-l-2 border-blue-300 text-blue-900' 
+          ? 'sticky left-0 z-50 bg-gradient-to-r from-blue-200 via-blue-50 to-blue-200 shadow-2xl border-l-4 border-r-4 border-blue-400 text-blue-900 font-extrabold' 
           : isHighlighted
-            ? 'bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 text-amber-900 shadow-lg border-amber-200'
-            : `${themeColors.header} ${themeColors.headerText} hover:shadow-md`
+            ? 'bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 text-amber-900 shadow-lg border-amber-200 z-20'
+            : `${themeColors.header} ${themeColors.headerText} hover:shadow-md z-20`
       } ${index === 0 ? 'rounded-tr-2xl' : ''} ${index === totalColumns - 1 ? 'rounded-tl-2xl' : ''}`}
       style={{ 
         width: columnWidth,
