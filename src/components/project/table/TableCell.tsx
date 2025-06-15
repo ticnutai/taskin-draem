@@ -120,24 +120,8 @@ export function TableCell({
   };
 
   return (
-    <td 
-      className={`text-right border-l-2 border-slate-200 py-4 px-6 cursor-pointer hover:bg-blue-50 transition-colors ${
-        colIndex === 0 ? 'sticky right-0 z-10 bg-white font-medium shadow-sm' : ''
-      } ${column.id === 'notes' ? 'max-w-xs' : ''} ${
-        colIndex === totalColumns - 1 ? 'border-l-0' : ''
-      }`}
-      onDoubleClick={() => {
-        if (column.id !== 'status' && column.id !== 'actions') {
-          copyToClipboard(task[column.id as keyof Task] as string || '');
-        }
-      }}
-      onClick={() => {
-        if (column.id !== 'status' && column.id !== 'actions') {
-          setEditingCell({taskId: task.id, field: column.id});
-        }
-      }}
-    >
+    <div className="w-full">
       {renderCellContent()}
-    </td>
+    </div>
   );
 }
