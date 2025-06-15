@@ -176,6 +176,7 @@ export function useProjectData() {
   };
 
   const updateTaskField = async (taskId: string, field: keyof Task, value: string) => {
+    console.log('updateTaskField called:', { taskId, field, value });
     try {
       const updateData: any = {};
       
@@ -183,6 +184,7 @@ export function useProjectData() {
       const builtInFields = ['clientName', 'taskName', 'dueDate', 'status', 'assignee', 'notes'];
       
       if (builtInFields.includes(field as string)) {
+        console.log('Updating built-in field:', field);
         // Map field names to database column names
         switch (field) {
           case 'clientName':
@@ -205,6 +207,7 @@ export function useProjectData() {
             break;
         }
       } else {
+        console.log('Updating custom field:', field);
         // Handle custom fields - update them in custom_data jsonb column
         const task = tasks.find(t => t.id === taskId);
         const currentCustomData = task ? Object.keys(task)
@@ -215,15 +218,21 @@ export function useProjectData() {
           ...currentCustomData,
           [field]: value
         };
+        console.log('Custom data update:', updateData.custom_data);
       }
 
+      console.log('Sending update to Supabase:', updateData);
       const { error } = await supabase
         .from('tasks')
         .update(updateData)
         .eq('id', taskId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
+      }
 
+      console.log('Supabase update successful, updating local state');
       // Update local state
       setTasks(tasks.map(task => 
         task.id === taskId ? { ...task, [field]: value } : task

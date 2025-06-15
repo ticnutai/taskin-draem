@@ -39,6 +39,18 @@ export function TableCell({
 }: TableCellProps) {
   const isEditing = editingCell?.taskId === task.id && editingCell?.field === column.id;
 
+  // Get value from task - handle custom fields
+  const getCellValue = () => {
+    const builtInFields = ['clientName', 'taskName', 'dueDate', 'status', 'assignee', 'notes'];
+    if (builtInFields.includes(column.id)) {
+      return task[column.id as keyof Task] as string;
+    }
+    // For custom fields, check if they exist directly or in custom_data
+    return task[column.id as keyof Task] || '';
+  };
+
+  console.log('TableCell render:', { taskId: task.id, columnId: column.id, value: getCellValue() });
+
   const renderCellContent = () => {
     switch (column.id) {
       case 'status':
@@ -79,8 +91,11 @@ export function TableCell({
         return isEditing ? (
           <Input
             type="date"
-            value={task[column.id as keyof Task] as string || ''}
-            onChange={(e) => updateTaskField(task.id, column.id as keyof Task, e.target.value)}
+            value={getCellValue() || ''}
+            onChange={(e) => {
+              console.log('Date field update:', { taskId: task.id, field: column.id, value: e.target.value });
+              updateTaskField(task.id, column.id as keyof Task, e.target.value);
+            }}
             onBlur={() => setEditingCell(null)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
             autoFocus
@@ -94,22 +109,28 @@ export function TableCell({
       case 'notes':
         return isEditing ? (
           <Textarea
-            value={task[column.id as keyof Task] as string || ''}
-            onChange={(e) => updateTaskField(task.id, column.id as keyof Task, e.target.value)}
+            value={getCellValue() || ''}
+            onChange={(e) => {
+              console.log('Notes field update:', { taskId: task.id, field: column.id, value: e.target.value });
+              updateTaskField(task.id, column.id as keyof Task, e.target.value);
+            }}
             onBlur={() => setEditingCell(null)}
             autoFocus
             className="h-16 text-right resize-none"
           />
         ) : (
-          <div className="cursor-text min-h-[20px] truncate" title={task[column.id as keyof Task] as string}>
-            {(task[column.id as keyof Task] as string) || 'לחץ להוספת הערות'}
+          <div className="cursor-text min-h-[20px] truncate" title={getCellValue()}>
+            {getCellValue() || 'לחץ להוספת הערות'}
           </div>
         );
       default:
         return isEditing ? (
           <Input
-            value={task[column.id as keyof Task] as string || ''}
-            onChange={(e) => updateTaskField(task.id, column.id as keyof Task, e.target.value)}
+            value={getCellValue() || ''}
+            onChange={(e) => {
+              console.log('Custom field update:', { taskId: task.id, field: column.id, value: e.target.value });
+              updateTaskField(task.id, column.id as keyof Task, e.target.value);
+            }}
             onBlur={() => setEditingCell(null)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
             autoFocus
@@ -117,7 +138,7 @@ export function TableCell({
           />
         ) : (
           <div className="cursor-text min-h-[20px]">
-            {(task[column.id as keyof Task] as string) || 'לחץ להוספת טקסט'}
+            {getCellValue() || 'לחץ להוספת טקסט'}
           </div>
         );
     }
