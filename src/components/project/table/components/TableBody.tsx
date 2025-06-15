@@ -1,10 +1,10 @@
 import React from 'react';
 import { Task } from '@/types/Task';
 import { Column } from '@/types/Column';
-import { TableCell } from './TableCell';
+import { TableDataRow } from './TableDataRow';
 
-interface TableRowProps {
-  task: Task;
+interface TableBodyProps {
+  tasks: Task[];
   columns: Column[];
   editingCell: {taskId: string, field: string} | null;
   setEditingCell: (cell: {taskId: string, field: string} | null) => void;
@@ -12,13 +12,19 @@ interface TableRowProps {
   updateTaskStatus: (taskId: string, status: Task['status']) => void;
   copyToClipboard: (text: string) => void;
   getStatusColor: (status: string) => string;
-  getRowColor: (status: string) => string;
   setReminderTask: (task: string) => void;
   setReminderDialogOpen: (open: boolean) => void;
+  highlightedColumns: Set<string>;
+  columnWidths: Record<string, number>;
+  rowHeights: Record<string, number>;
+  rowColors: Record<string, string>;
+  onRowColorChange: (taskId: string, color: string) => void;
+  onDeleteRow: (taskId: string) => void;
+  themeColors: any;
 }
 
-export function TableRow({
-  task,
+export function TableBody({
+  tasks,
   columns,
   editingCell,
   setEditingCell,
@@ -26,23 +32,25 @@ export function TableRow({
   updateTaskStatus,
   copyToClipboard,
   getStatusColor,
-  getRowColor,
   setReminderTask,
-  setReminderDialogOpen
-}: TableRowProps) {
-  const visibleColumns = columns
-    .filter(col => col.visible)
-    .sort((a, b) => a.order - b.order);
-
+  setReminderDialogOpen,
+  highlightedColumns,
+  columnWidths,
+  rowHeights,
+  rowColors,
+  onRowColorChange,
+  onDeleteRow,
+  themeColors
+}: TableBodyProps) {
   return (
-    <tr className={`${getRowColor(task.status)} border-b-2 border-slate-200 hover:shadow-md transition-all duration-200`}>
-      {visibleColumns.map((column, colIndex) => (
-        <TableCell
-          key={`${task.id}-${column.id}`}
+    <tbody>
+      {tasks.map((task, taskIndex) => (
+        <TableDataRow
+          key={task.id}
           task={task}
-          column={column}
-          colIndex={colIndex}
-          totalColumns={visibleColumns.length}
+          columns={columns}
+          taskIndex={taskIndex}
+          totalTasks={tasks.length}
           editingCell={editingCell}
           setEditingCell={setEditingCell}
           updateTaskField={updateTaskField}
@@ -51,8 +59,15 @@ export function TableRow({
           getStatusColor={getStatusColor}
           setReminderTask={setReminderTask}
           setReminderDialogOpen={setReminderDialogOpen}
+          highlightedColumns={highlightedColumns}
+          columnWidths={columnWidths}
+          rowHeight={rowHeights[task.id]}
+          rowColor={rowColors[task.id] || ''}
+          onRowColorChange={onRowColorChange}
+          onDeleteRow={() => onDeleteRow(task.id)}
+          themeColors={themeColors}
         />
       ))}
-    </tr>
+    </tbody>
   );
 }
