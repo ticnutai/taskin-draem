@@ -31,7 +31,7 @@ export function ActionButtons({
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+    <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6" dir="rtl">
       <Button
         onClick={onAddTask}
         className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-medium py-3 px-6 rounded-2xl transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
