@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, Filter, Bell } from 'lucide-react';
 import { ActionButtons } from './project/ActionButtons';
-import { EditableTable } from './project/EditableTable';
+import { EditableTable } from './project/table/EditableTable';
 import { ColumnManager } from './project/ColumnManager';
 import { Task, statusOptions } from '@/types/Task';
 import { Column } from '@/types/Column';
@@ -338,6 +338,20 @@ const ProjectManager = () => {
             setReminderTask={setReminderTask}
             setReminderDialogOpen={setReminderDialogOpen}
             onColumnToggle={() => setColumnManagerOpen(true)}
+            columns={columns}
+            setColumns={setColumns}
+            onAddRow={addTask}
+            onAddColumn={() => {
+              const newColumn: Column = {
+                id: `custom_${Date.now()}`,
+                label: `עמודה חדשה ${columns.length}`,
+                visible: true,
+                order: columns.length,
+                required: false
+              };
+              setColumns([...columns, newColumn]);
+            }}
+            onDeleteTask={(taskId) => setTasks(tasks.filter(task => task.id !== taskId))}
           />
 
           <ColumnManager
