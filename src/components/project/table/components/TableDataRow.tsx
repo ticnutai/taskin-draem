@@ -76,7 +76,7 @@ export function TableDataRow({
           key={`${task.id}-${column.id}`}
           className={`relative py-4 px-8 text-right transition-all duration-300 hover:bg-white/50 ${
             column.id === 'clientName' 
-              ? 'sticky left-0 z-40 bg-gradient-to-r from-blue-100 via-blue-25 to-blue-100 shadow-xl border-l-4 border-r-4 border-blue-300 font-bold text-blue-900 backdrop-blur-sm' 
+              ? 'sticky left-0 z-50 bg-white/95 shadow-lg border-r border-slate-200 font-semibold text-slate-800 backdrop-blur-sm' 
               : highlightedColumns.has(column.id)
                 ? 'bg-gradient-to-br from-amber-50/80 to-yellow-50/80 text-amber-900 shadow-md'
                 : `${themeColors.body} backdrop-blur-sm`
@@ -87,48 +87,44 @@ export function TableDataRow({
             borderBottom: taskIndex === totalTasks - 1 ? 'none' : '1px solid rgba(148, 163, 184, 0.2)'
           }}
         >
-          <div className="flex items-center justify-between gap-2 w-full">
-            {/* Row Controls - only in first column and on the left */}
-            {colIndex === 0 && (
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <RowColorPicker
-                  taskId={task.id}
-                  currentColor={rowColor}
-                  onColorChange={onRowColorChange}
-                />
-                {onDeleteRow && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="p-1 h-6 w-6 hover:bg-red-100 hover:text-red-600"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteRow();
-                    }}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            )}
-            
-            <div className="flex-1">
-              <TableCell
-                task={task}
-                column={column}
-                colIndex={colIndex}
-                totalColumns={visibleColumns.length}
-                editingCell={editingCell}
-                setEditingCell={setEditingCell}
-                updateTaskField={updateTaskField}
-                updateTaskStatus={updateTaskStatus}
-                copyToClipboard={copyToClipboard}
-                getStatusColor={getStatusColor}
-                setReminderTask={setReminderTask}
-                setReminderDialogOpen={setReminderDialogOpen}
+          {/* Row Controls - only in first column and on the left */}
+          {colIndex === 0 && (
+            <span className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute left-2 top-1/2 transform -translate-y-1/2 z-10">
+              <RowColorPicker
+                taskId={task.id}
+                currentColor={rowColor}
+                onColorChange={onRowColorChange}
               />
-            </div>
-          </div>
+              {onDeleteRow && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="p-1 h-6 w-6 hover:bg-red-100 hover:text-red-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteRow();
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              )}
+            </span>
+          )}
+          
+          <TableCell
+            task={task}
+            column={column}
+            colIndex={colIndex}
+            totalColumns={visibleColumns.length}
+            editingCell={editingCell}
+            setEditingCell={setEditingCell}
+            updateTaskField={updateTaskField}
+            updateTaskStatus={updateTaskStatus}
+            copyToClipboard={copyToClipboard}
+            getStatusColor={getStatusColor}
+            setReminderTask={setReminderTask}
+            setReminderDialogOpen={setReminderDialogOpen}
+          />
         </td>
       ))}
       

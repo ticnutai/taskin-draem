@@ -57,7 +57,7 @@ export function TableHeaderCell({
       key={column.id}
       className={`group relative sticky top-0 text-right font-bold py-5 px-8 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
         column.id === 'clientName' 
-          ? 'sticky left-0 z-50 bg-gradient-to-r from-blue-200 via-blue-50 to-blue-200 shadow-2xl border-l-4 border-r-4 border-blue-400 text-blue-900 font-extrabold' 
+          ? 'sticky left-0 z-50 bg-white/95 shadow-lg border-r border-slate-200 font-semibold text-slate-800 backdrop-blur-sm' 
           : isHighlighted
             ? 'bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 text-amber-900 shadow-lg border-amber-200 z-20'
             : `${themeColors.header} ${themeColors.headerText} hover:shadow-md z-20`
