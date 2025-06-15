@@ -9,15 +9,10 @@ import { Progress } from '@/components/ui/progress';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, Filter, Bell } from 'lucide-react';
 import { ActionButtons } from './project/ActionButtons';
+import { EditableTable } from './project/EditableTable';
+import { ColumnManager } from './project/ColumnManager';
 import { Task, statusOptions } from '@/types/Task';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Column } from '@/types/Column';
 
 const ProjectManager = () => {
   const [tasks, setTasks] = useState<Task[]>([
@@ -65,6 +60,16 @@ const ProjectManager = () => {
   const [reminderTask, setReminderTask] = useState<string>('');
   const [reminderTime, setReminderTime] = useState<string>('');
   const [editingCell, setEditingCell] = useState<{taskId: string, field: string} | null>(null);
+  const [columnManagerOpen, setColumnManagerOpen] = useState(false);
+  const [columns, setColumns] = useState<Column[]>([
+    { id: 'clientName', label: 'שם הלקוח', visible: true, order: 0, required: true },
+    { id: 'taskName', label: 'שם המשימה', visible: true, order: 1, required: true },
+    { id: 'dueDate', label: 'תאריך יעד', visible: true, order: 2, required: false },
+    { id: 'status', label: 'סטטוס', visible: true, order: 3, required: false },
+    { id: 'assignee', label: 'אחראי', visible: true, order: 4, required: false },
+    { id: 'notes', label: 'הערות', visible: true, order: 5, required: false },
+    { id: 'actions', label: 'פעולות', visible: true, order: 6, required: true }
+  ]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -321,149 +326,26 @@ const ProjectManager = () => {
             })}
           </div>
 
-          <div className="rounded-lg border-2 border-slate-300 shadow-lg overflow-hidden bg-white">
-            <Table className="border-separate border-spacing-0">
-              <TableHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
-                <TableRow>
-                  <TableHead className="text-right border-l-2 border-slate-200 font-bold text-slate-700 py-4 px-6">שם הלקוח</TableHead>
-                  <TableHead className="text-right border-l-2 border-slate-200 font-bold text-slate-700 py-4 px-6">שם המשימה</TableHead>
-                  <TableHead className="text-right border-l-2 border-slate-200 font-bold text-slate-700 py-4 px-6">תאריך יעד</TableHead>
-                  <TableHead className="text-right border-l-2 border-slate-200 font-bold text-slate-700 py-4 px-6">סטטוס</TableHead>
-                  <TableHead className="text-right border-l-2 border-slate-200 font-bold text-slate-700 py-4 px-6">אחראי</TableHead>
-                  <TableHead className="text-right border-l-2 border-slate-200 font-bold text-slate-700 py-4 px-6">הערות</TableHead>
-                  <TableHead className="text-right font-bold text-slate-700 py-4 px-6">פעולות</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTasks.map((task, index) => (
-                  <TableRow key={task.id} className={`${getRowColor(task.status)} border-b-2 border-slate-200 hover:shadow-md transition-all duration-200`}>
-                    <TableCell 
-                      className="text-right font-medium border-l-2 border-slate-200 py-4 px-6 cursor-pointer hover:bg-blue-50 transition-colors"
-                      onDoubleClick={() => copyToClipboard(task.clientName)}
-                      onClick={() => setEditingCell({taskId: task.id, field: 'clientName'})}
-                    >
-                      {editingCell?.taskId === task.id && editingCell?.field === 'clientName' ? (
-                        <Input
-                          value={task.clientName}
-                          onChange={(e) => updateTaskField(task.id, 'clientName', e.target.value)}
-                          onBlur={() => setEditingCell(null)}
-                          onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
-                          autoFocus
-                          className="h-8 text-right"
-                        />
-                      ) : (
-                        task.clientName
-                      )}
-                    </TableCell>
-                    <TableCell 
-                      className="text-right border-l-2 border-slate-200 py-4 px-6 cursor-pointer hover:bg-blue-50 transition-colors"
-                      onDoubleClick={() => copyToClipboard(task.taskName)}
-                      onClick={() => setEditingCell({taskId: task.id, field: 'taskName'})}
-                    >
-                      {editingCell?.taskId === task.id && editingCell?.field === 'taskName' ? (
-                        <Input
-                          value={task.taskName}
-                          onChange={(e) => updateTaskField(task.id, 'taskName', e.target.value)}
-                          onBlur={() => setEditingCell(null)}
-                          onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
-                          autoFocus
-                          className="h-8 text-right"
-                        />
-                      ) : (
-                        task.taskName
-                      )}
-                    </TableCell>
-                    <TableCell 
-                      className="text-right border-l-2 border-slate-200 py-4 px-6 cursor-pointer hover:bg-blue-50 transition-colors"
-                      onDoubleClick={() => copyToClipboard(task.dueDate)}
-                      onClick={() => setEditingCell({taskId: task.id, field: 'dueDate'})}
-                    >
-                      {editingCell?.taskId === task.id && editingCell?.field === 'dueDate' ? (
-                        <Input
-                          type="date"
-                          value={task.dueDate}
-                          onChange={(e) => updateTaskField(task.id, 'dueDate', e.target.value)}
-                          onBlur={() => setEditingCell(null)}
-                          onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
-                          autoFocus
-                          className="h-8 text-right"
-                        />
-                      ) : (
-                        new Date(task.dueDate).toLocaleDateString('he-IL')
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right border-l-2 border-slate-200 py-4 px-6">
-                      <Badge className={`${getStatusColor(task.status)} shadow-sm`}>
-                        {statusOptions.find(opt => opt.value === task.status)?.label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell 
-                      className="text-right border-l-2 border-slate-200 py-4 px-6 cursor-pointer hover:bg-blue-50 transition-colors"
-                      onDoubleClick={() => copyToClipboard(task.assignee)}
-                      onClick={() => setEditingCell({taskId: task.id, field: 'assignee'})}
-                    >
-                      {editingCell?.taskId === task.id && editingCell?.field === 'assignee' ? (
-                        <Input
-                          value={task.assignee}
-                          onChange={(e) => updateTaskField(task.id, 'assignee', e.target.value)}
-                          onBlur={() => setEditingCell(null)}
-                          onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
-                          autoFocus
-                          className="h-8 text-right"
-                        />
-                      ) : (
-                        task.assignee
-                      )}
-                    </TableCell>
-                    <TableCell 
-                      className="text-right border-l-2 border-slate-200 py-4 px-6 cursor-pointer hover:bg-blue-50 transition-colors max-w-xs"
-                      onDoubleClick={() => copyToClipboard(task.notes)}
-                      onClick={() => setEditingCell({taskId: task.id, field: 'notes'})}
-                    >
-                      {editingCell?.taskId === task.id && editingCell?.field === 'notes' ? (
-                        <Textarea
-                          value={task.notes}
-                          onChange={(e) => updateTaskField(task.id, 'notes', e.target.value)}
-                          onBlur={() => setEditingCell(null)}
-                          autoFocus
-                          className="h-16 text-right resize-none"
-                        />
-                      ) : (
-                        <div className="truncate" title={task.notes}>{task.notes}</div>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right py-4 px-6">
-                      <div className="flex gap-2 justify-start">
-                        <Select value={task.status} onValueChange={(value: Task['status']) => updateTaskStatus(task.id, value)}>
-                          <SelectTrigger className="w-32 text-right">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {statusOptions.map(option => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setReminderTask(`תזכורת למשימה: ${task.taskName} עבור ${task.clientName}`);
-                            setReminderDialogOpen(true);
-                          }}
-                          className="px-2 bg-gradient-to-r from-blue-100 to-purple-100 hover:from-blue-200 hover:to-purple-200 border-blue-300"
-                        >
-                          <Bell className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <EditableTable
+            tasks={filteredTasks}
+            editingCell={editingCell}
+            setEditingCell={setEditingCell}
+            updateTaskField={updateTaskField}
+            updateTaskStatus={updateTaskStatus}
+            copyToClipboard={copyToClipboard}
+            getStatusColor={getStatusColor}
+            getRowColor={getRowColor}
+            setReminderTask={setReminderTask}
+            setReminderDialogOpen={setReminderDialogOpen}
+            onColumnToggle={() => setColumnManagerOpen(true)}
+          />
+
+          <ColumnManager
+            open={columnManagerOpen}
+            onOpenChange={setColumnManagerOpen}
+            columns={columns}
+            onColumnsChange={(newColumns) => setColumns(newColumns)}
+          />
 
           {filteredTasks.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
