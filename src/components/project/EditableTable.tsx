@@ -173,6 +173,7 @@ export function EditableTable({
                         onKeyDown={(e) => e.key === 'Enter' && setEditingHeader(null)}
                         autoFocus
                         className="w-full h-8 text-right font-bold bg-transparent border-none outline-none text-inherit"
+                        style={{ direction: 'rtl' }}
                       />
                     ) : (
                       <div className="flex items-center justify-end gap-2">
