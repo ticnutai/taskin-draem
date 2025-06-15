@@ -48,6 +48,7 @@ export function RefactoredEditableTable({
 }: RefactoredEditableTableProps) {
   const tableRef = useRef<HTMLDivElement>(null);
   const [currentTheme, setCurrentTheme] = useState('default');
+  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     type: 'row' | 'column';
@@ -181,6 +182,9 @@ export function RefactoredEditableTable({
                   onResize={(e) => handleMouseDown(e, 'column', column.id)}
                   onDelete={!column.required ? () => handleDeleteColumn(column.id) : undefined}
                   themeColors={currentThemeColors}
+                  columnFilters={columnFilters}
+                  onFilterChange={(columnId, value) => setColumnFilters(prev => ({ ...prev, [columnId]: value }))}
+                  onClearFilter={(columnId) => setColumnFilters(prev => ({ ...prev, [columnId]: '' }))}
                 />
               ))}
             </tr>

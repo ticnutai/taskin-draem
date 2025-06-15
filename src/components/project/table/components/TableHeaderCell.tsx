@@ -2,6 +2,8 @@ import React from 'react';
 import { Column } from '@/types/Column';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { ColumnFilter } from './ColumnFilter';
+import { statusOptions } from '@/types/Task';
 
 interface TableHeaderCellProps {
   column: Column;
@@ -19,6 +21,9 @@ interface TableHeaderCellProps {
   onResize: (e: React.MouseEvent) => void;
   onDelete?: () => void;
   themeColors: any;
+  columnFilters: Record<string, string>;
+  onFilterChange: (columnId: string, value: string) => void;
+  onClearFilter: (columnId: string) => void;
 }
 
 export function TableHeaderCell({
@@ -36,14 +41,23 @@ export function TableHeaderCell({
   onCopy,
   onResize,
   onDelete,
-  themeColors
+  themeColors,
+  columnFilters,
+  onFilterChange,
+  onClearFilter
 }: TableHeaderCellProps) {
+  const getColumnType = () => {
+    if (column.id === 'status') return 'status';
+    if (column.id === 'dueDate') return 'date';
+    return 'text';
+  };
+
   return (
     <th 
       key={column.id}
       className={`group relative sticky top-0 z-20 text-right font-bold py-5 px-8 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
         column.id === 'clientName' 
-          ? `${themeColors.header} ${themeColors.headerText} sticky right-0 z-30 shadow-xl border-r ${themeColors.border}` 
+          ? 'sticky right-0 z-40 bg-gradient-to-l from-blue-100 via-white to-blue-100 shadow-2xl border-r-2 border-blue-300 text-blue-900' 
           : isHighlighted
             ? 'bg-gradient-to-br from-amber-100 via-yellow-50 to-amber-100 text-amber-900 shadow-lg border-amber-200'
             : `${themeColors.header} ${themeColors.headerText} hover:shadow-md`
@@ -71,28 +85,44 @@ export function TableHeaderCell({
           style={{ direction: 'rtl' }}
         />
       ) : (
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-2">
-            {onDelete && !column.required && (
-              <Button
-                size="sm"
-                variant="ghost"
-                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6 hover:bg-red-100 hover:text-red-600"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete();
-                }}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            )}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              {onDelete && !column.required && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1 h-6 w-6 hover:bg-red-100 hover:text-red-600"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="animate-fade-in">{headerValue}</span>
+              {isHighlighted && (
+                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="animate-fade-in">{headerValue}</span>
-            {isHighlighted && (
-              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-            )}
-          </div>
+          
+          {/* Column Filter */}
+          {column.id !== 'actions' && (
+            <div className="flex justify-end">
+              <ColumnFilter
+                columnId={column.id}
+                columnType={getColumnType()}
+                filterValue={columnFilters[column.id] || ''}
+                onFilterChange={onFilterChange}
+                onClearFilter={onClearFilter}
+                options={column.id === 'status' ? statusOptions : undefined}
+              />
+            </div>
+          )}
         </div>
       )}
       

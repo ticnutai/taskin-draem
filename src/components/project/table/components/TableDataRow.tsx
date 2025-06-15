@@ -76,7 +76,7 @@ export function TableDataRow({
           key={`${task.id}-${column.id}`}
           className={`relative py-4 px-8 text-right transition-all duration-300 hover:bg-white/50 ${
             column.id === 'clientName' 
-              ? `${themeColors.header} ${themeColors.headerText} font-semibold sticky right-0 z-10 shadow-lg border-r ${themeColors.border}` 
+              ? 'sticky right-0 z-30 bg-gradient-to-l from-blue-50 via-white to-blue-50 shadow-xl border-r-2 border-blue-200 font-bold text-blue-900 backdrop-blur-sm' 
               : highlightedColumns.has(column.id)
                 ? 'bg-gradient-to-br from-amber-50/80 to-yellow-50/80 text-amber-900 shadow-md'
                 : `${themeColors.body} backdrop-blur-sm`
