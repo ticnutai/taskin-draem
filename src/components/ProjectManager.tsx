@@ -100,8 +100,8 @@ const ProjectManager = () => {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
-      const clientMatch = !filterClient || task.clientName === filterClient;
-      const statusMatch = !filterStatus || task.status === filterStatus;
+      const clientMatch = !filterClient || filterClient === 'all' || task.clientName === filterClient;
+      const statusMatch = !filterStatus || filterStatus === 'all' || task.status === filterStatus;
       return clientMatch && statusMatch;
     });
   }, [tasks, filterClient, filterStatus]);
@@ -210,7 +210,7 @@ const ProjectManager = () => {
                 <SelectValue placeholder="בחר לקוח" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">כל הלקוחות</SelectItem>
+                <SelectItem value="all">כל הלקוחות</SelectItem>
                 {clients.map(client => (
                   <SelectItem key={client} value={client}>
                     {client}
@@ -223,7 +223,7 @@ const ProjectManager = () => {
                 <SelectValue placeholder="בחר סטטוס" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">כל הסטטוסים</SelectItem>
+                <SelectItem value="all">כל הסטטוסים</SelectItem>
                 <SelectItem value="pending">משימות שלא בוצעו</SelectItem>
                 {statusOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
@@ -235,8 +235,8 @@ const ProjectManager = () => {
             <Button 
               variant="outline" 
               onClick={() => {
-                setFilterClient('');
-                setFilterStatus('');
+                setFilterClient('all');
+                setFilterStatus('all');
               }}
             >
               נקה סינון
