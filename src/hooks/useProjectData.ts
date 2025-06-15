@@ -74,21 +74,24 @@ export function useProjectData() {
   }, [tasks]);
 
   const addTask = () => {
-    if (newTask.clientName && newTask.taskName) {
-      const task: Task = {
-        ...newTask,
-        id: Date.now().toString()
-      };
-      setTasks([...tasks, task]);
-      setNewTask({
-        clientName: '',
-        taskName: '',
-        dueDate: '',
-        status: 'pending',
-        assignee: '',
-        notes: ''
-      });
-    }
+    const task: Task = {
+      id: Date.now().toString(),
+      clientName: newTask.clientName || '',
+      taskName: newTask.taskName || '',
+      dueDate: newTask.dueDate || '',
+      status: 'pending',
+      assignee: newTask.assignee || '',
+      notes: newTask.notes || ''
+    };
+    setTasks([...tasks, task]);
+    setNewTask({
+      clientName: '',
+      taskName: '',
+      dueDate: '',
+      status: 'pending',
+      assignee: '',
+      notes: ''
+    });
   };
 
   const updateTaskField = (taskId: string, field: keyof Task, value: string) => {

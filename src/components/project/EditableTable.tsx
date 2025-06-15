@@ -63,37 +63,35 @@ export function EditableTable({
         onAddColumn={onAddColumn}
       />
 
-      <div className="relative overflow-auto max-h-[600px] rounded-lg border-2 border-slate-300 shadow-lg bg-white">
-        <ResizablePanelGroup direction="horizontal" className="min-h-[400px]">
-          <table className="w-full border-separate border-spacing-0">
-            <TableHeader
-              columns={columns}
-              editingHeader={editingHeader}
-              setEditingHeader={setEditingHeader}
-              columnHeaders={columnHeaders}
-              updateHeader={updateHeader}
-              copyToClipboard={copyToClipboard}
-            />
-            <tbody>
-              {tasks.map((task) => (
-                <TableRow
-                  key={task.id}
-                  task={task}
-                  columns={columns}
-                  editingCell={editingCell}
-                  setEditingCell={setEditingCell}
-                  updateTaskField={updateTaskField}
-                  updateTaskStatus={updateTaskStatus}
-                  copyToClipboard={copyToClipboard}
-                  getStatusColor={getStatusColor}
-                  getRowColor={getRowColor}
-                  setReminderTask={setReminderTask}
-                  setReminderDialogOpen={setReminderDialogOpen}
-                />
-              ))}
-            </tbody>
-          </table>
-        </ResizablePanelGroup>
+      <div className="relative overflow-x-auto overflow-y-auto max-h-[600px] max-w-full rounded-lg border-2 border-slate-300 shadow-lg bg-white">
+        <table className="w-max min-w-full border-separate border-spacing-0">
+          <TableHeader
+            columns={columns}
+            editingHeader={editingHeader}
+            setEditingHeader={setEditingHeader}
+            columnHeaders={columnHeaders}
+            updateHeader={updateHeader}
+            copyToClipboard={copyToClipboard}
+          />
+          <tbody>
+            {tasks.map((task) => (
+              <TableRow
+                key={task.id}
+                task={task}
+                columns={columns}
+                editingCell={editingCell}
+                setEditingCell={setEditingCell}
+                updateTaskField={updateTaskField}
+                updateTaskStatus={updateTaskStatus}
+                copyToClipboard={copyToClipboard}
+                getStatusColor={getStatusColor}
+                getRowColor={getRowColor}
+                setReminderTask={setReminderTask}
+                setReminderDialogOpen={setReminderDialogOpen}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
