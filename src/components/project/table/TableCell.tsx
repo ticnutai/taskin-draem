@@ -79,7 +79,7 @@ export function TableCell({
         return isEditing ? (
           <Input
             type="date"
-            value={task[column.id as keyof Task] as string || ''}
+            value={task[column.id as keyof Task] as string}
             onChange={(e) => updateTaskField(task.id, column.id as keyof Task, e.target.value)}
             onBlur={() => setEditingCell(null)}
             onKeyDown={(e) => e.key === 'Enter' && setEditingCell(null)}
@@ -87,22 +87,20 @@ export function TableCell({
             className="h-8 text-right"
           />
         ) : (
-          <div className="cursor-text min-h-[20px]">
-            {task.dueDate ? new Date(task.dueDate).toLocaleDateString('he-IL') : 'לחץ להוספת תאריך'}
-          </div>
+          new Date(task.dueDate).toLocaleDateString('he-IL')
         );
       case 'notes':
         return isEditing ? (
           <Textarea
-            value={task[column.id as keyof Task] as string || ''}
+            value={task[column.id as keyof Task] as string}
             onChange={(e) => updateTaskField(task.id, column.id as keyof Task, e.target.value)}
             onBlur={() => setEditingCell(null)}
             autoFocus
             className="h-16 text-right resize-none"
           />
         ) : (
-          <div className="cursor-text min-h-[20px] truncate" title={task[column.id as keyof Task] as string}>
-            {(task[column.id as keyof Task] as string) || 'לחץ להוספת הערות'}
+          <div className="truncate" title={task[column.id as keyof Task] as string}>
+            {task[column.id as keyof Task] as string}
           </div>
         );
       default:
@@ -116,16 +114,23 @@ export function TableCell({
             className="h-8 text-right"
           />
         ) : (
-          <div className="cursor-text min-h-[20px]">
-            {(task[column.id as keyof Task] as string) || 'לחץ להוספת טקסט'}
-          </div>
+          task[column.id as keyof Task] as string || ''
         );
     }
   };
 
   return (
-    <div 
-      className="w-full cursor-pointer" 
+    <td 
+      className={`text-right border-l-2 border-slate-200 py-4 px-6 cursor-pointer hover:bg-blue-50 transition-colors ${
+        colIndex === 0 ? 'sticky right-0 z-10 bg-white font-medium shadow-sm' : ''
+      } ${column.id === 'notes' ? 'max-w-xs' : ''} ${
+        colIndex === totalColumns - 1 ? 'border-l-0' : ''
+      }`}
+      onDoubleClick={() => {
+        if (column.id !== 'status' && column.id !== 'actions') {
+          copyToClipboard(task[column.id as keyof Task] as string || '');
+        }
+      }}
       onClick={() => {
         if (column.id !== 'status' && column.id !== 'actions') {
           setEditingCell({taskId: task.id, field: column.id});
@@ -133,6 +138,6 @@ export function TableCell({
       }}
     >
       {renderCellContent()}
-    </div>
+    </td>
   );
 }

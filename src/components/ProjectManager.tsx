@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ActionButtons } from './project/ActionButtons';
-import { RefactoredEditableTable } from './project/table/RefactoredEditableTable';
+import { EditableTable } from './project/EditableTable';
 import { ColumnManager } from './project/ColumnManager';
 import { TaskForm } from './project/TaskForm';
 import { FilterControls } from './project/FilterControls';
@@ -25,9 +25,7 @@ const ProjectManager = () => {
     updateTaskField,
     updateTaskStatus,
     handleImport,
-    addColumn,
-    deleteTask,
-    loading
+    addColumn
   } = useProjectData();
 
   const {
@@ -76,23 +74,6 @@ const ProjectManager = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="p-6 max-w-7xl mx-auto space-y-6 direction-rtl" dir="rtl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-primary">ניהול פרויקטים לפי לקוח</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center py-8">
-              <div className="text-lg">טוען נתונים...</div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6 direction-rtl" dir="rtl">
       <Card>
@@ -130,7 +111,7 @@ const ProjectManager = () => {
 
           <ProgressCards projectProgress={projectProgress} clients={clients} />
 
-          <RefactoredEditableTable
+          <EditableTable
             tasks={filteredTasks}
             editingCell={editingCell}
             setEditingCell={setEditingCell}
@@ -143,10 +124,8 @@ const ProjectManager = () => {
             setReminderDialogOpen={setReminderDialogOpen}
             onColumnToggle={() => setColumnManagerOpen(true)}
             columns={columns}
-            setColumns={setColumns}
             onAddRow={addTask}
             onAddColumn={addColumn}
-            onDeleteTask={deleteTask}
           />
 
           <ColumnManager

@@ -9,75 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      columns: {
-        Row: {
-          column_order: number
-          created_at: string
-          id: string
-          label: string
-          required: boolean
-          updated_at: string
-          visible: boolean
-        }
-        Insert: {
-          column_order?: number
-          created_at?: string
-          id: string
-          label: string
-          required?: boolean
-          updated_at?: string
-          visible?: boolean
-        }
-        Update: {
-          column_order?: number
-          created_at?: string
-          id?: string
-          label?: string
-          required?: boolean
-          updated_at?: string
-          visible?: boolean
-        }
-        Relationships: []
-      }
-      tasks: {
-        Row: {
-          assignee: string | null
-          client_name: string
-          created_at: string
-          custom_data: Json | null
-          due_date: string | null
-          id: string
-          notes: string | null
-          status: string
-          task_name: string
-          updated_at: string
-        }
-        Insert: {
-          assignee?: string | null
-          client_name: string
-          created_at?: string
-          custom_data?: Json | null
-          due_date?: string | null
-          id?: string
-          notes?: string | null
-          status?: string
-          task_name: string
-          updated_at?: string
-        }
-        Update: {
-          assignee?: string | null
-          client_name?: string
-          created_at?: string
-          custom_data?: Json | null
-          due_date?: string | null
-          id?: string
-          notes?: string | null
-          status?: string
-          task_name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
