@@ -1,0 +1,47 @@
+[33mb1f6004[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m first commit
+[33m5873e29[m First commit
+[33m2187e95[m Reverted to commit b4cb31894e859e4599a39306ad5a2656b01ed5b9
+[33m242603e[m Reverted to commit 6e908336defc659258ec3540469832ce8b729668
+[33m1cf051c[m Reverted to commit fc48fd17ff53104f093da9fd44ee4a2d96eaa6ac
+[33mebef3e9[m Reverted to commit a5790f6a3abad6ce3d9ac343c84a79b8e7f6d01f
+[33m4df910e[m Add table row/column management features
+[33m778d292[m Reverted to commit 52e446a8013ae4a38fc78713589bd5eb2cb06416
+[33mecfee24[m Fix sticky header and save issues
+[33m0d884ea[m Fix sticky column and save issues
+[33ma5790f6[m Fix: Ensure sticky first row and column
+[33m0bfd4f2[m Refactor table component
+[33mfc48fd1[m Fix sticky column and row
+[33mebaef02[m Fix sticky table and disable row/column resize
+[33maf059e2[m Fix table header and column stickiness
+[33m8eaa269[m Run SQL script
+[33m6e90833[m Run SQL for data persistence.
+[33m95b819b[m Fix sticky column and row
+[33m752f21b[m Fix client name column
+[33mdf31559[m Fix: Unable to add column values
+[33mb1cbb31[m Fix: Table cell editing issue
+[33me3d2239[m Fix: Sticky column on horizontal scroll
+[33mf04d840[m Fix: Select.Item value prop error
+[33mf03e475[m Fix: TableHeaderCell errors
+[33m694b7a0[m Fix: Implement sticky first column and add filtering
+[33m847830f[m Implement in-place editing.
+[33mc3ce452[m Implement requested changes
+[33mde25499[m Fix table resizing and styling
+[33m8347885[m Fix: Table resize synchronization issues
+[33m06dbe8c[m Fix: Sync column/row resizing, add row color icon, and settings icon
+[33mb4cb318[m Fix: Edit cell to show full text
+[33mad8bbc5[m Add row coloring and table styling
+[33m07576ce[m Add column/row resizing and styling
+[33m6803b37[m Fix Select.Item error
+[33mfc66dff[m Fix: Select.Item value error
+[33m94f8dc4[m Fix non-functional features
+[33mf9aea01[m Refactor ProjectManager.tsx
+[33mc69bc23[m Refactor: Split EditableTable into smaller components
+[33m387e5e1[m Add row and column controls
+[33m52e446a[m Add table header and column customization
+[33mf0aa7c3[m Refactor: Implement RTL and design changes
+[33m39d16a4[m Refactor: Split ProjectManager.tsx into smaller components
+[33ma277587[m Add features and styling
+[33m9c550f3[m Fix: Select component value prop error
+[33mc70bd8d[m Connect to Supabase project
+[33mc206aae[m Add project management table
+[33mcb32970[m Use tech stack vite_react_shadcn_ts
