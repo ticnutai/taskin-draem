@@ -1,1 +1,73 @@
-project_id = "oeosjkqmephphiwneddb"
+import axios from 'axios';
+import { SERVER_CONFIG } from '../config/server.config';
+import { useState, useEffect } from 'react';
+import { toast } from '@/components/ui/use-toast';
+
+const api = axios.create({
+  baseURL: SERVER_CONFIG.BASE_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+export const TaskService = {
+  async getAllTasks() {
+    return await api.get(SERVER_CONFIG.API_ENDPOINTS.TASKS);
+  },
+
+  async createTask(task) {
+    return await api.post(SERVER_CONFIG.API_ENDPOINTS.TASKS, task);
+  },
+
+  async updateTask(id, task) {
+    return await api.put(`${SERVER_CONFIG.API_ENDPOINTS.TASKS}/${id}`, task);
+  },
+
+  async deleteTask(id) {
+    return await api.delete(`${SERVER_CONFIG.API_ENDPOINTS.TASKS}/${id}`);
+  }
+};
+
+export const TaskList = () => {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  const loadTasks = async () => {
+    try {
+      const response = await TaskService.getAllTasks();
+      setTasks(response.data);
+    } catch (error) {
+      toast({
+        title: "שגיאה",
+        description: "לא ניתן לטעון את המשימות",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveTask = async (task) => {
+    try {
+      await TaskService.createTask(task);
+      await loadTasks();
+      toast({
+        title: "הצלחה",
+        description: "המשימה נשמרה בהצלחה",
+      });
+    } catch (error) {
+      toast({
+        title: "שגיאה",
+        description: "לא ניתן לשמור את המשימה",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <div>
+      {/* תצוגת המשימות */}
+    </div>
+  );
+};
