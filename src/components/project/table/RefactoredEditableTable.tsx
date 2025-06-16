@@ -158,10 +158,10 @@ export function RefactoredEditableTable({
 
       <div 
         ref={tableRef}
-        className="relative overflow-auto max-h-[600px] max-w-full rounded-2xl border border-slate-200 shadow-2xl"
+        className="relative overflow-auto max-h-[600px] max-w-full rounded-2xl border border-slate-200 shadow-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 backdrop-blur-sm"
         style={{ cursor: isResizing ? 'col-resize' : 'default' }}
       >
-        <table className="w-max min-w-full border-separate border-spacing-0 rounded-2xl overflow-hidden shadow-inner">
+        <table className="w-max min-w-full border-separate border-spacing-0 bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-inner">
           <thead>
             <tr>
               {visibleColumns.map((column, index) => (
@@ -179,7 +179,7 @@ export function RefactoredEditableTable({
                   onEditEnd={() => setEditingHeader(null)}
                   onHighlightToggle={() => toggleColumnHighlight(column.id)}
                   onCopy={copyToClipboard}
-                  
+                  onResize={(e) => handleMouseDown(e, 'column', column.id)}
                   onDelete={!column.required ? () => handleDeleteColumn(column.id) : undefined}
                   themeColors={currentThemeColors}
                   columnFilters={columnFilters}
@@ -210,7 +210,7 @@ export function RefactoredEditableTable({
                 rowHeight={rowHeights[task.id]}
                 rowColor={rowColors[task.id] || ''}
                 onRowColorChange={handleRowColorChange}
-                
+                onRowResize={(e) => handleMouseDown(e, 'row', task.id)}
                 onDeleteRow={() => handleDeleteRow(task.id)}
                 themeColors={currentThemeColors}
               />

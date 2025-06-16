@@ -156,15 +156,9 @@ const ProjectManager = () => {
             onColumnsChange={(newColumns) => setColumns(newColumns)}
           />
 
-          {filteredTasks.length === 0 && !loading && (
+          {filteredTasks.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               לא נמצאו משימות התואמות לסינון
-            </div>
-          )}
-          
-          {loading && (
-            <div className="text-center py-8 text-muted-foreground">
-              טוען נתונים...
             </div>
           )}
         </CardContent>
