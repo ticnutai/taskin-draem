@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ActionButtons } from './project/ActionButtons';
-import { EditableTable } from './project/table/EditableTable';
+import { RefactoredEditableTable } from './project/table/RefactoredEditableTable';
 import { ColumnManager } from './project/ColumnManager';
 import { TaskForm } from './project/TaskForm';
 import { FilterControls } from './project/FilterControls';
@@ -130,7 +130,7 @@ const ProjectManager = () => {
 
           <ProgressCards projectProgress={projectProgress} clients={clients} />
 
-          <EditableTable
+          <RefactoredEditableTable
             tasks={filteredTasks}
             editingCell={editingCell}
             setEditingCell={setEditingCell}

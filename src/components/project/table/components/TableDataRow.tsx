@@ -75,7 +75,7 @@ export function TableDataRow({
           key={`${task.id}-${column.id}`}
           className={`relative py-4 px-8 text-right transition-colors duration-200 group-hover:bg-muted/50 ${
             column.id === 'clientName' 
-              ? 'sticky left-0 z-[80] bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
+              ? 'sticky left-0 z-50 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-600 shadow-lg font-semibold text-slate-800 dark:text-slate-200' 
               : highlightedColumns.has(column.id)
                 ? 'bg-amber-50'
                 : ''
